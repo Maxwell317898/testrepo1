@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Market</title>
+    <title>Simple Market with Inventory</title>
 </head>
 <body>
 
@@ -25,31 +25,48 @@
         <!-- Add more products as needed -->
     </ul>
 
-    <script>
-        // Retrieve user balance from local storage or set default value
-        let userBalance = localStorage.getItem('userBalance') || 1000;
+    <h2>Inventory</h2>
+    <ul id="inventoryList"></ul>
 
-        // Update user balance on the page
+    <script>
+        let userBalance = localStorage.getItem('userBalance') || 1000;
+        let userInventory = JSON.parse(localStorage.getItem('userInventory')) || [];
+
         document.getElementById('userBalance').textContent = userBalance;
 
-        // Function to handle buying products
         function buyProduct(price) {
-            // Check if user has enough money
             if (userBalance >= price) {
-                // Deduct the price from the user's balance
                 userBalance -= price;
-
-                // Update user balance on the page
                 document.getElementById('userBalance').textContent = userBalance;
 
-                // Save the updated balance to local storage
+                // Add the purchased product to the user's inventory
+                userInventory.push(`Product ${userInventory.length + 1}`);
+
+                // Update inventory on the page
+                updateInventory();
+
                 localStorage.setItem('userBalance', userBalance);
+                localStorage.setItem('userInventory', JSON.stringify(userInventory));
 
                 alert(`Product purchased for $${price}. Remaining balance: $${userBalance}`);
             } else {
                 alert('Insufficient funds. Earn more fake money!');
             }
         }
+
+        function updateInventory() {
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
+
+            userInventory.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = item;
+                inventoryList.appendChild(listItem);
+            });
+        }
+
+        // Initial inventory update
+        updateInventory();
     </script>
 
 </body>
