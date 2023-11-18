@@ -28,6 +28,8 @@
     <h2>Inventory</h2>
     <ul id="inventoryList"></ul>
 
+    <button onclick="restart()">Restart</button>
+
     <script>
         let userBalance = localStorage.getItem('userBalance') || 1000;
         let userInventory = JSON.parse(localStorage.getItem('userInventory')) || [];
@@ -39,8 +41,16 @@
                 userBalance -= price;
                 document.getElementById('userBalance').textContent = userBalance;
 
-                // Add the purchased product to the user's inventory
-                userInventory.push(`Product ${userInventory.length + 1}`);
+                // Check if the product is already in the inventory
+                const productIndex = userInventory.findIndex(item => item.name === `Product ${userInventory.length + 1}`);
+                
+                if (productIndex !== -1) {
+                    // If the product is already in the inventory, increase its quantity
+                    userInventory[productIndex].quantity++;
+                } else {
+                    // If the product is not in the inventory, add it with quantity 1
+                    userInventory.push({ name: `Product ${userInventory.length + 1}`, quantity: 1 });
+                }
 
                 // Update inventory on the page
                 updateInventory();
@@ -60,9 +70,23 @@
 
             userInventory.forEach(item => {
                 const listItem = document.createElement('li');
-                listItem.textContent = item;
+                listItem.textContent = `${item.name} x${item.quantity}`;
                 inventoryList.appendChild(listItem);
             });
+        }
+
+        function restart() {
+            // Reset user data
+            userBalance = 1000;
+            userInventory = [];
+
+            // Update UI
+            document.getElementById('userBalance').textContent = userBalance;
+            updateInventory();
+
+            // Clear local storage
+            localStorage.removeItem('userBalance');
+            localStorage.removeItem('userInventory');
         }
 
         // Initial inventory update
