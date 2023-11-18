@@ -3,39 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon Image Fetcher</title>
+    <title>Static Data Graph</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <label for="pokemonName">Enter Pokémon Name:</label>
-    <input type="text" id="pokemonName" placeholder="E.g., pikachu">
-    <button onclick="fetchPokemon()">Fetch Pokémon</button>
+    <h1>Static Data Graph</h1>
 
-    <div id="pokemonImageContainer">
-        <!-- Pokémon image will be displayed here -->
-    </div>
+    <canvas id="myChart" width="400" height="200"></canvas>
 
     <script>
-        function fetchPokemon() {
-            const pokemonNameInput = document.getElementById('pokemonName');
-            const pokemonName = pokemonNameInput.value.toLowerCase();
+        // Hardcoded data
+        const labels = ['Label 1', 'Label 2', 'Label 3', 'Label 4', 'Label 5'];
+        const values = [10, 20, 15, 25, 30];
 
-            // Fetch data from PokeAPI
-            fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Get the front default sprite URL
-                    const spriteUrl = data.sprites.front_default;
-
-                    // Display the Pokémon image
-                    const pokemonImageContainer = document.getElementById('pokemonImageContainer');
-                    pokemonImageContainer.innerHTML = `<img src="${spriteUrl}" alt="${pokemonName}">`;
-                })
-                .catch(error => {
-                    console.error('Error fetching Pokémon data:', error);
-                    alert('Error fetching Pokémon data. Please try again.');
-                });
-        }
+        // Create a bar chart
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Static Data',
+                    data: values,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     </script>
 
 </body>
