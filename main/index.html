@@ -14,18 +14,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Define the API endpoint
-            const apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=51.319&longitude=-0.5589&hourly=temperature_2m&forecast_days=1';
+            const apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=51.32&longitude=-0.5600002&hourly=temperature_2m&forecast_days=1';
 
             // Fetch data from the API
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
                     // Extract relevant information from the API response
-                    const temperatureData = data.hourly.temperature_2m;
+                    const hourlyData = data.hourly.temperature_2m;
 
                     // Extract timestamps and values for the chart
-                    const timestamps = temperatureData.map(entry => entry.timestamp_local);
-                    const values = temperatureData.map(entry => entry.value);
+                    const timestamps = hourlyData.time;
+                    const values = hourlyData.temperature_2m;
 
                     // Display the temperature data as a chart
                     const temperatureChart = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
