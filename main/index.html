@@ -3,94 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Market with Inventory</title>
+    <title>Open Meteo API Example</title>
 </head>
 <body>
 
-    <h1>Welcome to the Simple Market</h1>
-
-    <div id="balance">Balance: $<span id="userBalance">1000</span></div>
-
-    <h2>Available Products</h2>
-
-    <ul id="productList">
-        <li>
-            <span>Product 1</span>
-            <button onclick="buyProduct(10)">Buy $10</button>
-        </li>
-        <li>
-            <span>Product 2</span>
-            <button onclick="buyProduct(20)">Buy $20</button>
-        </li>
-        <!-- Add more products as needed -->
-    </ul>
-
-    <h2>Inventory</h2>
-    <ul id="inventoryList"></ul>
-
-    <button onclick="restart()">Restart</button>
+    <h1>Weather Forecast</h1>
+    <div id="weatherInfo"></div>
 
     <script>
-        let userBalance = localStorage.getItem('userBalance') || 1000;
-        let userInventory = JSON.parse(localStorage.getItem('userInventory')) || [];
+        document.addEventListener('DOMContentLoaded', function () {
+            // Define the API endpoint
+            const apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude=51.319&longitude=-0.5589&hourly=temperature_2m&forecast_days=1';
 
-        document.getElementById('userBalance').textContent = userBalance;
+            // Fetch data from the API
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Extract relevant information from the API response
+                    const temperatureData = data.hourly.temperature_2m;
 
-        function buyProduct(price) {
-            if (userBalance >= price) {
-                userBalance -= price;
-                document.getElementById('userBalance').textContent = userBalance;
-
-                // Check if the product is already in the inventory
-                const productIndex = userInventory.findIndex(item => item.name === `Product ${userInventory.length + 1}`);
-                
-                if (productIndex !== -1) {
-                    // If the product is already in the inventory, increase its quantity
-                    userInventory[productIndex].quantity++;
-                } else {
-                    // If the product is not in the inventory, add it with quantity 1
-                    userInventory.push({ name: `Product ${userInventory.length + 1}`, quantity: 1 });
-                }
-
-                // Update inventory on the page
-                updateInventory();
-
-                localStorage.setItem('userBalance', userBalance);
-                localStorage.setItem('userInventory', JSON.stringify(userInventory));
-
-                alert(`Product purchased for $${price}. Remaining balance: $${userBalance}`);
-            } else {
-                alert('Insufficient funds. Earn more fake money!');
-            }
-        }
-
-        function updateInventory() {
-            const inventoryList = document.getElementById('inventoryList');
-            inventoryList.innerHTML = '';
-
-            userInventory.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${item.name} x${item.quantity}`;
-                inventoryList.appendChild(listItem);
-            });
-        }
-
-        function restart() {
-            // Reset user data
-            userBalance = 1000;
-            userInventory = [];
-
-            // Update UI
-            document.getElementById('userBalance').textContent = userBalance;
-            updateInventory();
-
-            // Clear local storage
-            localStorage.removeItem('userBalance');
-            localStorage.removeItem('userInventory');
-        }
-
-        // Initial inventory update
-        updateInventory();
+                    // Display the temperature data
+                    const weatherInfo = document.getElementById('weatherInfo');
+                    weatherInfo.innerHTML = `<h2>Temperature Forecast</h2>`;
+                    temperatureData.forEach(entry => {
+                        weatherInfo.innerHTML += `<p>${entry.timestamp_local}: ${entry.value} °C</p>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                    const weatherInfo = document.getElementById('weatherInfo');
+                    weatherInfo.innerHTML = `<p>Error fetching weather data. Please try again.</p>`;
+                });
+        });
     </script>
 
 </body>
