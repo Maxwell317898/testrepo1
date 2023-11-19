@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open Meteo API Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
     <h1>Weather Forecast</h1>
-    <div id="weatherInfo"></div>
+    <canvas id="temperatureChart" width="400" height="200"></canvas>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -22,17 +23,41 @@
                     // Extract relevant information from the API response
                     const temperatureData = data.hourly.temperature_2m;
 
-                    // Display the temperature data
-                    const weatherInfo = document.getElementById('weatherInfo');
-                    weatherInfo.innerHTML = `<h2>Temperature Forecast</h2>`;
-                    temperatureData.forEach(entry => {
-                        weatherInfo.innerHTML += `<p>${entry.timestamp_local}: ${entry.value} °C</p>`;
+                    // Extract timestamps and values for the chart
+                    const timestamps = temperatureData.map(entry => entry.timestamp_local);
+                    const values = temperatureData.map(entry => entry.value);
+
+                    // Display the temperature data as a chart
+                    const temperatureChart = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: timestamps,
+                            datasets: [{
+                                label: 'Temperature (°C)',
+                                data: values,
+                                borderColor: 'rgb(75, 192, 192)',
+                                borderWidth: 2,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    position: 'bottom'
+                                },
+                                y: {
+                                    min: Math.min(...values) - 2,
+                                    max: Math.max(...values) + 2,
+                                }
+                            }
+                        }
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching weather data:', error);
-                    const weatherInfo = document.getElementById('weatherInfo');
-                    weatherInfo.innerHTML = `<p>Error fetching weather data. Please try again.</p>`;
+                    const temperatureChart = document.getElementById('temperatureChart');
+                    temperatureChart.innerHTML = `<p>Error fetching weather data. Please try again.</p>`;
                 });
         });
     </script>
